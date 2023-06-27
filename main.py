@@ -35,7 +35,7 @@ class QuantumLayer(nn.Module):
         counts = result.get_counts(qc)
 
         # Convert the counts to a tensor
-        counts_tensor = torch.tensor([counts.get('00', 0), counts.get('01', 0), counts.get('10', 0), counts.get('11', 0)])
+        counts_tensor = torch.tensor([counts.get('00', 0), counts.get('01', 0), counts.get('10', 0), counts.get('11', 0)], dtype=torch.float)
         return counts_tensor
 
 # Define the neural network
