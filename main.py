@@ -65,17 +65,28 @@ class Bot:
         output = self.model(torch.tensor([1.0]))
 
         # Move the bot based on the output of the neural network
-        dx = output[0].item() * 10
-        dy = output[1].item() * 10
+        dx = output[0].item() * 1
+        dy = output[1].item() * 1
 
         # Get the current position of the bot
         pos = self.canvas.coords(self.rect)
 
         # Check if the bot is within the area
-        if 0 <= pos[0] + dx <= 790 and 0 <= pos[1] + dy <= 790:
-            self.canvas.move(self.rect, dx, dy)
+        if pos[0] + dx < 0 or pos[0] + dx > 790:
+            dx = -dx  # Reverse direction
+        if pos[1] + dy < 0 or pos[1] + dy > 790:
+            dy = -dy  # Reverse direction
 
-        return dx
+        # Delete the old rectangle
+        self.canvas.delete(self.rect)
+
+        # Create a new rectangle at the new location
+        self.x += dx
+        self.y += dy
+        self.rect = self.canvas.create_rectangle(self.x, self.y, self.x + 10, self.y + 10, fill='blue')
+
+        return abs(dx)  # Reward is based on the absolute distance moved
+
 
 # Create a Tkinter window
 root = tk.Tk()
