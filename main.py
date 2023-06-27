@@ -65,42 +65,62 @@ class Bot:
         output = self.model(torch.tensor([1.0]))
 
         # Move the bot based on the output of the neural network
-        dx = output[0].item()
-        dy = output[1].item()
+        dx = output[0].item() * 10
+        dy = output[1].item() * 10
 
         # Get the current position of the bot
         pos = self.canvas.coords(self.rect)
 
         # Check if the bot is within the area
-        if 0 <= pos[0] + dx <= 390 and 0 <= pos[1] + dy <= 390:
+        if 0 <= pos[0] + dx <= 790 and 0 <= pos[1] + dy <= 790:
             self.canvas.move(self.rect, dx, dy)
 
         return dx
 
 # Create a Tkinter window
 root = tk.Tk()
-canvas = tk.Canvas(root, width=400, height=400)
+canvas = tk.Canvas(root, width=800, height=800)
 canvas.pack()
 
 # Create multiple bots with random initial parameters
 bots = [Bot(canvas, 200, 200, random.random()) for _ in range(10)]
+
+# Create obstacle
+obstacle = canvas.create_rectangle(350, 350, 450, 450, fill='red')
+
+def collision(bot, obstacle):
+    bot_pos = canvas.coords(bot.rect)
+    obs_pos = canvas.coords(obstacle)
+    return bot_pos[2] > obs_pos[0] and bot_pos[0] < obs_pos[2] and bot_pos[3] > obs_pos[1] and bot_pos[1] < obs_pos[3]
+
+# Move theHere's the continuation of the code from `# Move the`:
 
 # Move the bots every 100 milliseconds
 def update():
     global bots
 
     # Move each bot and calculate its fitness
-    fitnesses = [bot.move() for bot in bots]
+    fitnesses = []
+    surviving_bots = []
+    for bot in bots:
+        dx = bot.move()
+        if collision(bot, obstacle):
+            canvas.delete(bot.rect)
+        else:
+            fitnesses.append(dx)
+            surviving_bots.append(bot)
 
     # Normalize the fitnesses so that they sum to 1
     total_fitness = sum(fitnesses)
+    if total_fitness == 0:
+        return
     normalized_fitnesses = [fitness / total_fitness for fitness in fitnesses]
 
     # Create a new generation of bots
     new_bots = []
-    for _ in range(len(bots)):
+    for _ in range(len(surviving_bots)):
         # Select two bots to be the parents of the new bot
-        parent1, parent2 = random.choices(bots, weights=normalized_fitnesses, k=2)
+        parent1, parent2 = random.choices(surviving_bots, weights=normalized_fitnesses, k=2)
 
         # Create the new bot by averaging the parameters of the parents
         new_theta = (parent1.model.quantum_layer.theta.item() + parent2.model.quantum_layer.theta.item()) / 2
