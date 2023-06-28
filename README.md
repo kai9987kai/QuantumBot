@@ -3,3 +3,4 @@ QuantumBot is a unique simulation of bots controlled by a quantum neural network
 
 
 
+bot-communication-beta.pÿ is a beta script for testing bot communication on top of the normal bot structure 
