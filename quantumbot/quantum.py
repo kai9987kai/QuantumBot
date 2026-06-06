@@ -110,9 +110,7 @@ class VariationalQuantumPolicy:
     def _numpy_expectations(self, features: FloatArray) -> FloatArray:
         state = np.zeros(2**N_QUBITS, dtype=np.complex128)
         state[0] = 1.0
-        rotations = self.parameters[:-N_QUBITS].reshape(
-            N_LAYERS, N_QUBITS, 2
-        )
+        rotations = self.parameters[:-N_QUBITS].reshape(N_LAYERS, N_QUBITS, 2)
 
         for layer in range(N_LAYERS):
             for qubit in range(N_QUBITS):
@@ -140,9 +138,7 @@ class VariationalQuantumPolicy:
             ) from exc
 
         circuit = QuantumCircuit(N_QUBITS)
-        rotations = self.parameters[:-N_QUBITS].reshape(
-            N_LAYERS, N_QUBITS, 2
-        )
+        rotations = self.parameters[:-N_QUBITS].reshape(N_LAYERS, N_QUBITS, 2)
         for layer in range(N_LAYERS):
             for qubit in range(N_QUBITS):
                 feature = features[layer * N_QUBITS + qubit]
